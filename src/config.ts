@@ -1,6 +1,6 @@
 export class Config {
-  private clientId: string = "";
-  private botToken: string = "";
+  private clientId!: string;
+  private botToken!: string;
 
   constructor() {
     Object.assign(this, require("../config.json"));
