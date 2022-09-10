@@ -4,8 +4,8 @@ import { Song } from "../player";
 import { YouTubeUtils } from "../youtube";
 
 module.exports = {
-	data: new SlashCommandBuilder().setName("play").setDescription("Plays a song in voice-chat.").addStringOption(option => option.setName("query").setDescription("Song name or URL").setRequired(true)),
-	async execute(interaction: Interaction<CacheType>, bot: Bot) {
+  data: new SlashCommandBuilder().setName("play").setDescription("Plays a song in voice-chat.").addStringOption(option => option.setName("query").setDescription("Song name or URL").setRequired(true)),
+  async execute(interaction: Interaction<CacheType>, bot: Bot) {
     if (!interaction.isChatInputCommand() || !interaction.guildId) return;
     
     const guild = interaction.guild || await interaction.client.guilds.fetch(interaction.guildId);

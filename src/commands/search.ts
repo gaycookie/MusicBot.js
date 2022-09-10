@@ -4,8 +4,8 @@ import { Bot } from "..";
 import { YouTubeUtils } from "../youtube";
 
 module.exports = {
-	data: new SlashCommandBuilder().setName("search").setDescription("Search for a song.").addStringOption(option => option.setName("query").setDescription("Song name or URL").setRequired(true)),
-	async execute(interaction: Interaction<CacheType>, bot: Bot) {
+  data: new SlashCommandBuilder().setName("search").setDescription("Search for a song.").addStringOption(option => option.setName("query").setDescription("Song name or URL").setRequired(true)),
+  async execute(interaction: Interaction<CacheType>, bot: Bot) {
     if (!interaction.isChatInputCommand() || !interaction.guildId) return;
     const guild = interaction.guild || await interaction.client.guilds.fetch(interaction.guildId);
     const query = interaction.options.getString("query");

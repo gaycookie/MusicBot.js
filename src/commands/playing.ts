@@ -4,8 +4,8 @@ import { Bot } from "..";
 import { Utils } from "../utils";
 
 module.exports = {
-	data: new SlashCommandBuilder().setName("playing").setDescription("See what song is playing right now."),
-	async execute(interaction: Interaction<CacheType>, bot: Bot) {
+  data: new SlashCommandBuilder().setName("playing").setDescription("See what song is playing right now."),
+  async execute(interaction: Interaction<CacheType>, bot: Bot) {
     if (!interaction.isChatInputCommand() || !interaction.guildId) return;
     const guild = interaction.guild || await interaction.client.guilds.fetch(interaction.guildId);
     const player = bot.player;
