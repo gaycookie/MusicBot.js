@@ -32,7 +32,7 @@ module.exports = {
         if (player.queue.length > 0) {
           var upcomingSongsText = "";
           for (let i = 0; i < player.queue.length; i++) {
-            if (i < 4) upcomingSongsText += `${i + 1}. [${Utils.textOverflow(player.queue[i].songName, 64)}](${player.queue[i].songUrl})\n`
+            if (i < 5) upcomingSongsText += `${i + 1}. [${Utils.textOverflow(player.queue[i].songName, 64)}](${player.queue[i].songUrl})\n`
           }
     
           embed.addFields({

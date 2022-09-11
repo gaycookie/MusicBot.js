@@ -70,10 +70,12 @@ export class Player {
 
         if (this.currentSong) {
           this.playSong(this.currentSong).then(resolve);
+        } else {
+          resolve(undefined);
         }
+      } else {
+        resolve(undefined);
       }
-
-      resolve(undefined);
     });
   }
 
@@ -83,7 +85,7 @@ export class Player {
       this.audioPlayer.play(createAudioResource(stream));
       this.bot.setSongActivity(song.songName);
 
-      resolve(this.currentSong);
+      resolve(song);
     });
   }
 }
