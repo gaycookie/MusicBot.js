@@ -36,7 +36,7 @@ module.exports = {
     }
 
     await interaction.reply({ content: `Loading playlist...` });
-    
+
     for (let i = 0; i < videos.length; i++) {
       const videoInfo = await YouTubeUtils.getVideoInfoById(videos[i].videoId);
 
@@ -57,8 +57,8 @@ module.exports = {
           songUrl: videoInfo.url
         });
       }
-
-      await interaction.editReply({ content: `Playlist loaded: ${videos.length} songs queued.` });
     }
+
+    await interaction.editReply({ content: `Playlist loaded: ${videos.length} songs queued.` });
   }
 }
