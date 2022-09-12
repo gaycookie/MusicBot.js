@@ -12,70 +12,57 @@ module.exports = {
     const query = interaction.options.getString("query", true);
     const player = bot.player;
 
-    if (player && player.voiceConnection) {
-      const connection = player.voiceConnection;
+    if (!player || !player.voiceConnection || !player.voiceConnection.joinConfig.channelId) {
+      await interaction.reply({ content: "I'm currently not active in a voice-channel.", ephemeral: true });
+      return;
+    }
 
-      if (connection && connection.joinConfig.channelId) {
-        const member = await guild.members.fetch(interaction.user.id);
-  
-        if (connection.joinConfig.channelId != member.voice.channelId) {
-          await interaction.reply({ content: "We're not in the same voice-channel.", ephemeral: true });
-          return;
-        }
+    const member = await guild.members.fetch(interaction.user.id);
+    if (player.voiceConnection.joinConfig.channelId != member.voice.channelId) {
+      await interaction.reply({ content: "We're not in the same voice-channel.", ephemeral: true });
+      return;
+    }
 
-        var song: Song | undefined = undefined;
-        const urlExp = /\S*https?:\/\/\S+/;
-        const matchUrl = query.match(urlExp);
+    var song!: Song;
 
-        if (matchUrl && matchUrl.length > 0) {
-          const videoId = YouTubeUtils.getVideoIdFromUrl(matchUrl[0]);
-          if (!videoId) {
-            await interaction.reply({ content: "Are you sure this is a YouTube url?" });
-            return;
-          }
-          
-          const video = await YouTubeUtils.getVideoInfoById(videoId);
-          if (!video) {
-            await interaction.reply({ content: "No video was found with this URL." });
-            return;
-          }
+    const videoId = YouTubeUtils.getVideoIdFromUrl(query);
+    if (videoId) {
+      const video = await YouTubeUtils.getVideoInfoById(videoId);
 
-          song = {
-            requester: interaction.user.id,
-            songDuration: video.duration.seconds,
-            songName: video.title,
-            songUrl: video.url
-          };
-        } else {
-          const { videos } = await YouTubeUtils.findVideosByQuery(query);
-          if (!videos.length) {
-            await interaction.reply({ content: "No video was found." });
-            return;
-          }
+      if (!video) {
+        await interaction.reply({ content: "No video was found with this URL.", ephemeral: true });
+        return;
+      }
 
-          song = {
-            requester: interaction.user.id,
-            songDuration: videos[0].duration.seconds,
-            songName: videos[0].title,
-            songUrl: videos[0].url
-          }
-        }
-
-        if (song) {
-          if (!player.currentSong) {
-            player.currentSong = song;
-            player.playSong(player.currentSong);
-            await interaction.reply({ content: `Now playing **${song.songName}**.` });
-          } else {
-            player.queue.push(song);
-            await interaction.reply({ content: `**${song.songName}** has been added to the queue.` });
-          }
-        }
-      } else {
-        await interaction.reply({ content: "I'm currently not active in a voice-channel.", ephemeral: true });
+      song = {
+        requester: interaction.user.id,
+        songDuration: video.duration.seconds,
+        songName: video.title,
+        songUrl: video.url
       }
     } else {
-      await interaction.reply({ content: "I'm currently not active in a voice-channel.", ephemeral: true });
+      const { videos } = await YouTubeUtils.findVideosByQuery(query);
+
+      if (!videos.length) {
+        await interaction.reply({ content: "No video was found with that term", ephemeral: true });
+        return;
+      }
+
+      song = {
+        requester: interaction.user.id,
+        songDuration: videos[0].duration.seconds,
+        songName: videos[0].title,
+        songUrl: videos[0].url
+      }
+    }
+
+    if (!player.currentSong) {
+      player.currentSong = song;
+      player.playSong(player.currentSong);
+      await interaction.reply({ content: `Now playing **${song.songName}**.` });
+    } else {
+      player.queue.push(song);
+      await interaction.reply({ content: `**${song.songName}** has been added to the queue.` });
     }
 	}
 };

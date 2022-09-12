@@ -29,36 +29,38 @@ module.exports = {
       return;
     }
 
-    const { videos } = await YouTubeUtils.getPlaylistInfoById(playlistId);
-    if (!videos.length) {
-      await interaction.reply({ content: "No videos were found in this playlist.", ephemeral: true });
-      return;
-    }
-
-    await interaction.reply({ content: `Loading playlist...` });
-
-    for (let i = 0; i < videos.length; i++) {
-      const videoInfo = await YouTubeUtils.getVideoInfoById(videos[i].videoId);
-
-      if (!player.currentSong) {
-        player.currentSong = {
-          requester: interaction.user.id,
-          songDuration: videoInfo.duration.seconds,
-          songName: videoInfo.title,
-          songUrl: videoInfo.url
-        }
-
-        player.playSong(player.currentSong);
-      } else {
-        player.queue.push({
-          requester: interaction.user.id,
-          songDuration: videoInfo.duration.seconds,
-          songName: videoInfo.title,
-          songUrl: videoInfo.url
-        });
+    YouTubeUtils.getPlaylistInfoById(playlistId).then(async ({ videos }) => {
+      if (!videos.length) {
+        await interaction.reply({ content: "No videos were found in this playlist.", ephemeral: true });
+        return;
       }
-    }
 
-    await interaction.editReply({ content: `Playlist loaded: ${videos.length} songs queued.` });
+      await interaction.reply({ content: `Loading playlist...` });
+      for (let i = 0; i < videos.length; i++) {
+        const videoInfo = await YouTubeUtils.getVideoInfoById(videos[i].videoId);
+  
+        if (!player.currentSong) {
+          player.currentSong = {
+            requester: interaction.user.id,
+            songDuration: videoInfo.duration.seconds,
+            songName: videoInfo.title,
+            songUrl: videoInfo.url
+          }
+  
+          player.playSong(player.currentSong);
+        } else {
+          player.queue.push({
+            requester: interaction.user.id,
+            songDuration: videoInfo.duration.seconds,
+            songName: videoInfo.title,
+            songUrl: videoInfo.url
+          });
+        }
+      }
+
+      await interaction.editReply({ content: `Playlist loaded: ${videos.length} songs queued.` });
+    }).catch(async err => {
+      await interaction.reply({ content: `${err.message}`, ephemeral: true });
+    });
   }
 }
